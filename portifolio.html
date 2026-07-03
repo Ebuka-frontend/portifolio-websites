@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eze Ebuka — Freelance Frontend Web Developer</title>
+    <meta name="description" content="Eze Ebuka is a Freelance Frontend Web Developer crafting premium digital experiences with React, Tailwind CSS, and modern animation libraries.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0B1220',
+                        secondary: '#111827',
+                        accent1: '#00E5FF',
+                        accent2: '#4F8CFF',
+                        accent3: '#7C3AED',
+                        accent4: '#38BDF8',
+                        accent5: '#22D3EE',
+                        'tp': '#F8FAFC',
+                        'ts': '#94A3B8',
+                    },
+                    fontFamily: { heading: ['Space Grotesk','sans-serif'], body: ['DM Sans','sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        :root{--primary:#0B1220;--secondary:#111827;--accent1:#00E5FF;--accent2:#4F8CFF;--accent3:#7C3AED;--accent4:#38BDF8;--accent5:#22D3EE;--glass:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);--tp:#F8FAFC;--ts:#94A3B8}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:auto}
+        body{font-family:'DM Sans',sans-serif;background:var(--primary);color:var(--tp);overflow-x:hidden;cursor:none}
+        a,button,input,textarea,[data-magnetic]{cursor:none}
+
+        /* Cursor */
+        .cursor-dot{position:fixed;width:8px;height:8px;background:var(--accent1);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s}
+        .cursor-ring{position:fixed;width:40px;height:40px;border:1.5px solid rgba(0,229,255,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s,background .3s}
+        .cursor-dot.expanded{width:16px;height:16px;background:var(--accent2)}
+        .cursor-ring.expanded{width:60px;height:60px;border-color:rgba(79,140,255,.5);background:rgba(79,140,255,.05)}
+        .cursor-dot.card-hover{width:12px;height:12px;background:var(--accent3)}
+        .cursor-ring.card-hover{width:80px;height:80px;border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.04)}
+
+        #dotfield-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        #ballpit-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+        .glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border)}
+        .glass-strong{background:rgba(255,255,255,.08);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.12)}
+
+        .nav-bar{transition:all .4s cubic-bezier(.16,1,.3,1)}
+        .nav-bar.scrolled{background:rgba(11,18,32,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+        .nav-link{position:relative;color:var(--ts);transition:color .3s;font-size:.875rem;font-weight:500;letter-spacing:.02em}
+        .nav-link:hover,.nav-link.active{color:var(--accent1)}
+        .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .3s;border-radius:1px}
+        .nav-link:hover::after,.nav-link.active::after{width:100%}
+
+        .gradient-text{background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-text-animated{background:linear-gradient(270deg,var(--accent1),var(--accent2),var(--accent3),var(--accent4),var(--accent1));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 6s ease infinite}
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+        .btn-primary{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:var(--primary);font-weight:600;padding:14px 32px;border-radius:12px;border:none;font-size:.95rem;transition:all .3s;letter-spacing:.01em;font-family:'DM Sans',sans-serif}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,255,.3)}
+        .btn-primary .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);transform:scale(0);animation:ripple .6s linear}
+        @keyframes ripple{to{transform:scale(4);opacity:0}}
+
+        .btn-secondary{position:relative;overflow:hidden;background:transparent;color:var(--tp);font-weight:500;padding:14px 32px;border-radius:12px;border:1px solid rgba(255,255,255,.15);font-size:.95rem;transition:all .3s;font-family:'DM Sans',sans-serif}
+        .btn-secondary:hover{border-color:var(--accent1);color:var(--accent1);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,255,.1)}
+
+        .btn-ghost{position:relative;overflow:hidden;background:transparent;color:var(--ts);font-weight:500;padding:14px 32px;border-radius:12px;border:1px solid var(--border);font-size:.95rem;transition:all .3s;font-family:'DM Sans',sans-serif}
+        .btn-ghost:hover{border-color:var(--accent3);color:var(--accent3);transform:translateY(-2px)}
+
+        .tilt-card{transform-style:preserve-3d;transition:transform .15s ease}
+        .tilt-card .card-glare{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%),rgba(255,255,255,.12),transparent 60%);z-index:5}
+        .tilt-card:hover .card-glare{opacity:1}
+
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+        @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        .float{animation:float 6s ease-in-out infinite}
+        .float2{animation:float2 8s ease-in-out infinite;animation-delay:-2s}
+
+        .typewriter-cursor{display:inline-block;width:3px;height:1.1em;background:var(--accent1);margin-left:2px;vertical-align:text-bottom;animation:blink 1s step-end infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+        .marquee-track{display:flex;animation:marquee 35s linear infinite;width:max-content}
+        @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .marquee-track:hover{animation-play-state:paused}
+
+        .scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent1),var(--accent2),var(--accent3));z-index:10001;transform-origin:left;transform:scaleX(0)}
+
+        .timeline-line{position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,var(--accent1),var(--accent2),var(--accent3),transparent);transform:translateX(-50%)}
+        @media(max-width:768px){.timeline-line{left:20px}}
+        .timeline-dot{width:16px;height:16px;border-radius:50%;background:var(--accent1);border:3px solid var(--primary);box-shadow:0 0 20px rgba(0,229,255,.4);position:absolute;left:50%;transform:translateX(-50%);z-index:2}
+        @media(max-width:768px){.timeline-dot{left:20px}}
+
+        .animated-border{position:relative}
+        .animated-border::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,var(--accent1),transparent,var(--accent2),transparent,var(--accent3));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s}
+        .animated-border:hover::before{opacity:1}
+
+        .code-snippet{font-family:'Courier New',monospace;font-size:.72rem;line-height:1.7;color:var(--ts);opacity:0;pointer-events:none}
+        .code-snippet .kw{color:var(--accent3)}.code-snippet .str{color:var(--accent1)}.code-snippet .fn{color:var(--accent2)}.code-snippet .cm{color:#475569}
+
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--primary)}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+        .mobile-menu{transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+        .mobile-menu.open{transform:translateX(0)}
+
+        .toast{position:fixed;bottom:30px;right:30px;z-index:10002;transform:translateY(100px);opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1)}
+        .toast.show{transform:translateY(0);opacity:1}
+
+        .back-to-top{position:fixed;bottom:30px;right:30px;z-index:9999;opacity:0;transform:translateY(20px);transition:all .4s;pointer-events:none}
+        .back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+
+        .tech-badge{padding:4px 12px;border-radius:999px;font-size:.75rem;font-weight:500;background:rgba(0,229,255,.08);color:var(--accent1);border:1px solid rgba(0,229,255,.15);transition:all .3s}
+        .tech-badge:hover{background:rgba(0,229,255,.15);border-color:rgba(0,229,255,.3)}
+
+        .form-input{width:100%;padding:14px 18px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;color:var(--tp);font-family:'DM Sans',sans-serif;font-size:.95rem;transition:all .3s;outline:none}
+        .form-input:focus{border-color:var(--accent1);box-shadow:0 0 0 3px rgba(0,229,255,.1);background:rgba(255,255,255,.06)}
+        .form-input::placeholder{color:rgba(148,163,184,.5)}
+
+        .noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
+
+        .counter-number{font-variant-numeric:tabular-nums}
+
+        .hamburger span{display:block;width:24px;height:2px;background:var(--tp);transition:all .3s;border-radius:1px}
+        .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+        .hamburger.open span:nth-child(2){opacity:0}
+        .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+        .section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+        @keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(0,229,255,.2)}50%{box-shadow:0 0 40px rgba(0,229,255,.4)}}
+
+        .spotlight-card{position:relative;overflow:hidden}
+        .spotlight-card .spotlight-effect{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(0,229,255,.08),transparent 70%);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s;z-index:1}
+        .spotlight-card:hover .spotlight-effect{opacity:1}
+
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- DotField Background -->
+    <canvas id="dotfield-canvas"></canvas>
+
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar fixed top-0 left-0 w-full z-[1000] px-4 md:px-8 py-4" id="navbar">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="#hero" class="font-heading text-xl font-bold gradient-text no-underline">Eze Ebuka</a>
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="#hero" class="nav-link active no-underline" data-section="hero">Home</a>
+                <a href="#about" class="nav-link no-underline" data-section="about">About</a>
+                <a href="#skills" class="nav-link no-underline" data-section="skills">Skills</a>
+                <a href="#experience" class="nav-link no-underline" data-section="experience">Experience</a>
+                <a href="#projects" class="nav-link no-underline" data-section="projects">Projects</a>
+                <a href="#services" class="nav-link no-underline" data-section="services">Services</a>
+                <a href="#contact" class="nav-link no-underline" data-section="contact">Contact</a>
+                <button onclick="downloadResume()" class="btn-primary text-sm py-2 px-5" data-magnetic>Resume</button>
+            </div>
+            <button class="hamburger lg:hidden flex flex-col gap-1.5 p-2 bg-transparent border-none" id="hamburger-btn" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 w-72 h-full z-[1001] glass-strong flex flex-col p-8 pt-20 gap-6" id="mobile-menu">
+        <a href="#hero" class="nav-link text-lg no-underline mobile-nav-link">Home</a>
+        <a href="#about" class="nav-link text-lg no-underline mobile-nav-link">About</a>
+        <a href="#skills" class="nav-link text-lg no-underline mobile-nav-link">Skills</a>
+        <a href="#experience" class="nav-link text-lg no-underline mobile-nav-link">Experience</a>
+        <a href="#projects" class="nav-link text-lg no-underline mobile-nav-link">Projects</a>
+        <a href="#services" class="nav-link text-lg no-underline mobile-nav-link">Services</a>
+        <a href="#contact" class="nav-link text-lg no-underline mobile-nav-link">Contact</a>
+        <button onclick="downloadResume();closeMobileMenu()" class="btn-primary text-sm py-3 mt-4">Download Resume</button>
+    </div>
+    <div class="fixed inset-0 bg-black/50 z-[1000] hidden" id="mobile-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="relative z-[2]">
+
+        <!-- Hero Section -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+            <canvas id="ballpit-canvas"></canvas>
+            <div id="hero-glow" class="absolute w-[500px] h-[500px] rounded-full pointer-events-none opacity-60" style="background:radial-gradient(circle,rgba(0,229,255,.07) 0%,transparent 70%);transform:translate(-50%,-50%);left:50%;top:50%;z-index:2"></div>
+
+            <!-- Floating Code Snippets -->
+            <div class="code-snippet absolute top-24 right-8 md:right-16 float hidden lg:block z-[3]">
+                <span class="kw">const</span> <span class="fn">createExperience</span> = () => {<br>
+                &nbsp;&nbsp;<span class="kw">return</span> <span class="str">"premium"</span>;<br>
+                };
+            </div>
+            <div class="code-snippet absolute bottom-32 left-8 md:left-16 float2 hidden lg:block z-[3]">
+                <span class="cm">// Building the future</span><br>
+                <span class="kw">export default</span> <span class="fn">EzeEbuka</span>;
+            </div>
+            <div class="code-snippet absolute top-44 left-[20%] float hidden xl:block z-[3]">
+                <span class="fn">useAnimation</span>({<br>
+                &nbsp;&nbsp;duration: <span class="str">"smooth"</span>,<br>
+                &nbsp;&nbsp;quality: <span class="str">"premium"</span><br>
+                });
+            </div>
+            <div class="code-snippet absolute bottom-44 right-[15%] float2 hidden xl:block z-[3]">
+                <span class="cm">// pixel perfect</span><br>
+                <span class="kw">const</span> ui = <span class="fn">craft</span>(<span class="str">"luxury"</span>);
+            </div>
+
+            <div class="relative z-[5] text-center px-4 max-w-5xl mx-auto pt-24">
+                <p class="hero-subtitle text-accent1 font-heading font-semibold text-sm md:text-base tracking-[0.2em] uppercase mb-6 opacity-0">Freelance Frontend Web Developer</p>
+                <h1 class="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] mb-6">
+                    <span class="block hero-greeting opacity-0">Hi, I'm </span>
+                    <span class="hero-name gradient-text-animated inline-block">Eze Ebuka</span>
+                </h1>
+                <h2 class="hero-headline font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-tp/90 mb-8 leading-tight"></h2>
+                <p class="hero-description text-ts text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed opacity-0">I am a Freelance Frontend Web Developer with over two years of experience building responsive, modern and high-performance websites that combine exceptional UI/UX with elegant animations and clean engineering.</p>
+                <div class="hero-buttons flex flex-wrap items-center justify-center gap-4 opacity-0">
+                    <a href="#projects" class="btn-primary" data-magnetic>View Projects</a>
+                    <a href="#contact" class="btn-secondary" data-magnetic>Contact Me</a>
+                    <button onclick="downloadResume()" class="btn-ghost" data-magnetic>Download Resume</button>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-[5] flex flex-col items-center gap-2 opacity-0 hero-scroll-indicator">
+                <span class="text-ts/50 text-xs tracking-widest uppercase font-heading">Scroll</span>
+                <div class="w-5 h-8 border border-ts/20 rounded-full flex justify-center pt-1.5">
+                    <div class="w-1 h-2 bg-accent1 rounded-full" style="animation:float 2s ease-in-out infinite"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Marquee -->
+        <div class="relative z-[2] overflow-hidden py-6 border-y border-white/5">
+            <div class="marquee-track" id="marquee">
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">React</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">JavaScript</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">TypeScript</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">Tailwind CSS</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Framer Motion</span>
+                <span class="mx-8 text-accent3/20 font-heading text-sm font-medium whitespace-nowrap">GSAP</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Next.js</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">Vite</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Figma</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">Responsive Design</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">HTML5</span>
+                <span class="mx-8 text-accent3/20 font-heading text-sm font-medium whitespace-nowrap">CSS3</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Git</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">GitHub</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Performance</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">UI/UX</span>
+                <!-- Duplicate for seamless loop -->
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">React</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">JavaScript</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">TypeScript</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">Tailwind CSS</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Framer Motion</span>
+                <span class="mx-8 text-accent3/20 font-heading text-sm font-medium whitespace-nowrap">GSAP</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Next.js</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">Vite</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Figma</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">Responsive Design</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">HTML5</span>
+                <span class="mx-8 text-accent3/20 font-heading text-sm font-medium whitespace-nowrap">CSS3</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Git</span>
+                <span class="mx-8 text-accent1/20 font-heading text-sm font-medium whitespace-nowrap">GitHub</span>
+                <span class="mx-8 text-ts/20 font-heading text-sm font-medium whitespace-nowrap">Performance</span>
+                <span class="mx-8 text-accent2/20 font-heading text-sm font-medium whitespace-nowrap">UI/UX</span>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <section id="about" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">Get To Know</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">About Eze Ebuka</h2>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="gsap-reveal">
+                        <p class="text-ts text-lg leading-relaxed mb-6">I am <strong class="text-tp font-semibold">Eze Ebuka</strong>, a Freelance Frontend Web Developer with more than <strong class="text-accent1 font-semibold">2 years of professional experience</strong> creating responsive, modern and visually engaging websites.</p>
+                        <p class="text-ts text-lg leading-relaxed mb-6">I specialize in building premium landing pages, business websites, portfolios and modern frontend applications using React, JavaScript, Tailwind CSS and advanced animation libraries.</p>
+                        <p class="text-ts text-lg leading-relaxed mb-6">Over the past two years, I have successfully completed numerous freelance projects for clients across different industries.</p>
+                        <p class="text-ts text-lg leading-relaxed">My goal is to create beautiful, high-performance websites that combine exceptional design with outstanding user experience.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 gsap-reveal">
+                        <div class="glass rounded-2xl p-6 text-center animated-border">
+                            <div class="font-heading text-3xl md:text-4xl font-bold text-accent1 counter-number" data-target="2" data-suffix="+">0</div>
+                            <div class="text-ts text-sm mt-2">Years Experience</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 text-center animated-border">
+                            <div class="font-heading text-3xl md:text-4xl font-bold text-accent2 counter-number" data-target="25" data-suffix="+">0</div>
+                            <div class="text-ts text-sm mt-2">Projects Completed</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 text-center animated-border">
+                            <div class="font-heading text-3xl md:text-4xl font-bold text-accent4 counter-number" data-target="100" data-suffix="%">0</div>
+                            <div class="text-ts text-sm mt-2">Responsive Websites</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 text-center animated-border">
+                            <div class="font-heading text-3xl md:text-4xl font-bold text-accent3 counter-number" data-target="12" data-suffix="+">0</div>
+                            <div class="text-ts text-sm mt-2">Technologies Used</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Skills Section -->
+        <section id="skills" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">What I Use</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Skills & Tools</h2>
+                </div>
+                <div class="mb-12 gsap-reveal">
+                    <h3 class="font-heading text-xl font-semibold text-tp mb-6 flex items-center gap-3"><span class="w-8 h-0.5 bg-accent1"></span>Frontend</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="frontend-skills"></div>
+                </div>
+                <div class="gsap-reveal">
+                    <h3 class="font-heading text-xl font-semibold text-tp mb-6 flex items-center gap-3"><span class="w-8 h-0.5 bg-accent2"></span>Tools</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="tools-skills"></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Experience Section -->
+        <section id="experience" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">My Journey</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Experience</h2>
+                </div>
+                <div class="relative" id="timeline">
+                    <div class="timeline-line"></div>
+                    <div class="relative pb-16 gsap-reveal">
+                        <div class="timeline-dot" style="top:8px"></div>
+                        <div class="ml-0 md:ml-[calc(50%+40px)] md:mr-[calc(50%+40px)]">
+                            <div class="glass rounded-2xl p-6 md:p-8 animated-border">
+                                <span class="text-accent1 text-sm font-semibold font-heading">2+ Years</span>
+                                <h3 class="font-heading text-xl md:text-2xl font-bold mt-2 mb-1">Freelance Frontend Web Developer</h3>
+                                <p class="text-ts text-sm mb-4">Self-Employed &mdash; Present</p>
+                                <ul class="space-y-2 text-ts text-sm leading-relaxed">
+                                    <li class="flex items-start gap-2"><span class="text-accent1 mt-1">&#9656;</span>Developed premium responsive websites for diverse clients</li>
+                                    <li class="flex items-start gap-2"><span class="text-accent1 mt-1">&#9656;</span>Built business websites, landing pages and portfolios</li>
+                                    <li class="flex items-start gap-2"><span class="text-accent1 mt-1">&#9656;</span>Designed interactive user interfaces with modern frameworks</li>
+                                    <li class="flex items-start gap-2"><span class="text-accent1 mt-1">&#9656;</span>Optimized website performance for speed and SEO</li>
+                                    <li class="flex items-start gap-2"><span class="text-accent1 mt-1">&#9656;</span>Delivered numerous successful frontend projects on time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Projects Section -->
+        <section id="projects" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">My Work</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Featured Projects</h2>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid"></div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Services Section -->
+        <section id="services" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">What I Offer</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Services</h2>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="services-grid"></div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">Client Feedback</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Testimonials</h2>
+                </div>
+                <div class="relative gsap-reveal" id="testimonial-container">
+                    <div class="glass-strong rounded-3xl p-8 md:p-12 text-center" id="testimonial-card">
+                        <div class="text-accent1 text-5xl mb-6 font-heading">&ldquo;</div>
+                        <p class="text-tp/90 text-lg md:text-xl leading-relaxed mb-8" id="testimonial-text"></p>
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-accent1 to-accent3 flex items-center justify-center font-heading font-bold text-primary text-sm" id="testimonial-avatar"></div>
+                            <div class="text-left">
+                                <div class="font-heading font-semibold" id="testimonial-name"></div>
+                                <div class="text-ts text-sm" id="testimonial-role"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center gap-4 mt-8">
+                        <button onclick="prevTestimonial()" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all" aria-label="Previous testimonial"><i class="fas fa-chevron-left text-sm"></i></button>
+                        <div class="flex gap-2" id="testimonial-dots"></div>
+                        <button onclick="nextTestimonial()" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all" aria-label="Next testimonial"><i class="fas fa-chevron-right text-sm"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider max-w-6xl mx-auto"></div>
+
+        <!-- Contact Section -->
+        <section id="contact" class="relative z-[2] py-24 md:py-32 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 gsap-reveal">
+                    <span class="text-accent1 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block font-heading">Get In Touch</span>
+                    <h2 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold gradient-text-animated">Contact Me</h2>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div class="gsap-reveal">
+                        <form id="contact-form" class="space-y-5">
+                            <div>
+                                <label class="block text-sm text-ts mb-2 font-medium" for="name">Full Name</label>
+                                <input type="text" id="name" class="form-input" placeholder="Your full name" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-ts mb-2 font-medium" for="email">Email</label>
+                                <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-ts mb-2 font-medium" for="subject">Subject</label>
+                                <input type="text" id="subject" class="form-input" placeholder="What's this about?" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-ts mb-2 font-medium" for="message">Message</label>
+                                <textarea id="message" class="form-input min-h-[140px] resize-y" placeholder="Tell me about your project..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary w-full" data-magnetic>Send Message</button>
+                        </form>
+                    </div>
+                    <div class="gsap-reveal flex flex-col justify-center">
+                        <div class="glass rounded-2xl p-8 mb-6 animated-border">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-accent1/10 flex items-center justify-center"><i class="fas fa-envelope text-accent1"></i></div>
+                                <div>
+                                    <div class="text-ts text-sm">Email</div>
+                                    <a href="mailto:eze114238@gmail.com" class="text-tp font-medium hover:text-accent1 transition-colors no-underline">eze114238@gmail.com</a>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-accent2/10 flex items-center justify-center"><i class="fas fa-globe text-accent2"></i></div>
+                                <div>
+                                    <div class="text-ts text-sm">Availability</div>
+                                    <div class="text-tp font-medium">Open to freelance projects</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-accent3/10 flex items-center justify-center"><i class="fas fa-clock text-accent3"></i></div>
+                                <div>
+                                    <div class="text-ts text-sm">Response Time</div>
+                                    <div class="text-tp font-medium">Within 24 hours</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass rounded-2xl p-8">
+                            <h4 class="font-heading font-semibold mb-3">Let's Work Together</h4>
+                            <p class="text-ts text-sm leading-relaxed">Whether you need a premium landing page, a business website, or a modern web application, I'm ready to bring your vision to life with clean code and stunning design.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-[2] border-t border-white/5 py-16 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div>
+                    <a href="#hero" class="font-heading text-2xl font-bold gradient-text no-underline block mb-4">Eze Ebuka</a>
+                    <p class="text-ts text-sm leading-relaxed">Freelance Frontend Web Developer crafting premium digital experiences with modern technologies.</p>
+                </div>
+                <div>
+                    <h4 class="font-heading font-semibold mb-4 text-sm tracking-wider uppercase text-ts">Navigation</h4>
+                    <div class="flex flex-col gap-2">
+                        <a href="#about" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">About</a>
+                        <a href="#skills" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">Skills</a>
+                        <a href="#projects" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">Projects</a>
+                        <a href="#services" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">Services</a>
+                        <a href="#contact" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">Contact</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-heading font-semibold mb-4 text-sm tracking-wider uppercase text-ts">Services</h4>
+                    <div class="flex flex-col gap-2">
+                        <span class="text-ts/70 text-sm">Frontend Development</span>
+                        <span class="text-ts/70 text-sm">Landing Pages</span>
+                        <span class="text-ts/70 text-sm">Business Websites</span>
+                        <span class="text-ts/70 text-sm">React Applications</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-heading font-semibold mb-4 text-sm tracking-wider uppercase text-ts">Connect</h4>
+                    <div class="flex gap-3 mb-4">
+                        <a href="https://github.com/" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all no-underline" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://linkedin.com/" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all no-underline" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="mailto:eze114238@gmail.com" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all no-underline" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
+                    <a href="mailto:eze114238@gmail.com" class="text-ts/70 text-sm hover:text-accent1 transition-colors no-underline">eze114238@gmail.com</a>
+                </div>
+            </div>
+            <div class="section-divider mb-8"></div>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-ts/50 text-sm">&copy; 2025 Eze Ebuka. All rights reserved.</p>
+                <p class="text-ts/30 text-xs">Crafted with precision and modern engineering.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top w-12 h-12 rounded-full glass flex items-center justify-center text-ts hover:text-accent1 hover:border-accent1/30 transition-all border border-white/10" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+        <i class="fas fa-arrow-up text-sm"></i>
+    </button>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="glass-strong rounded-xl px-6 py-4 flex items-center gap-3 min-w-[300px]">
+            <div class="w-8 h-8 rounded-full bg-accent1/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-check text-accent1 text-sm"></i></div>
+            <span class="toast-message text-sm text-tp"></span>
+        </div>
+    </div>
+
+    <script>
+    /* ============================================================
+       DATA
+       ============================================================ */
+    const frontendSkills = [
+        { name: 'HTML5', icon: 'fab fa-html5', color: '#E34F26' },
+        { name: 'CSS3', icon: 'fab fa-css3-alt', color: '#1572B6' },
+        { name: 'JavaScript', icon: 'fab fa-js', color: '#F7DF1E' },
+        { name: 'TypeScript', icon: 'fas fa-code', color: '#3178C6' },
+        { name: 'React', icon: 'fab fa-react', color: '#61DAFB' },
+        { name: 'Next.js', icon: 'fas fa-forward', color: '#FFFFFF' },
+        { name: 'Tailwind CSS', icon: 'fas fa-wind', color: '#06B6D4' },
+        { name: 'Framer Motion', icon: 'fas fa-wand-magic-sparkles', color: '#00E5FF' },
+        { name: 'GSAP', icon: 'fas fa-bolt', color: '#88CE02' },
+    ];
+
+    const toolsSkills = [
+        { name: 'Git', icon: 'fab fa-git-alt', color: '#F05032' },
+        { name: 'GitHub', icon: 'fab fa-github', color: '#FFFFFF' },
+        { name: 'Vite', icon: 'fas fa-rocket', color: '#646CFF' },
+        { name: 'Figma', icon: 'fab fa-figma', color: '#F24E1E' },
+        { name: 'Responsive', icon: 'fas fa-mobile-screen', color: '#00E5FF' },
+        { name: 'Performance', icon: 'fas fa-gauge-high', color: '#4F8CFF' },
+    ];
+
+    const projects = [
+        {
+            title: 'Chronos Store',
+            description: 'Modern luxury eCommerce website with premium UI, smooth animations and a refined shopping experience.',
+            image: 'https://picsum.photos/seed/chronos-luxury/600/400.jpg',
+            url: 'https://ebuka-frontend.github.io/eze-website/',
+            tags: ['React', 'Tailwind CSS', 'Framer Motion']
+        },
+        {
+            title: 'Prestige Real Estate',
+            description: 'Luxury real estate website featuring property listings, elegant galleries and a sophisticated design language.',
+            image: 'https://picsum.photos/seed/prestige-estate/600/400.jpg',
+            url: 'https://ebuka-frontend.github.io/ebuka-website/',
+            tags: ['HTML5', 'CSS3', 'JavaScript']
+        },
+        {
+            title: 'Atlas Plumbing & Heating Co.',
+            description: 'Professional plumbing company website with clean layout, service showcases and easy contact functionality.',
+            image: 'https://picsum.photos/seed/atlas-plumbing/600/400.jpg',
+            url: 'https://ebuka-frontend.github.io/stephen-website/',
+            tags: ['React', 'Tailwind CSS', 'Responsive']
+        }
+    ];
+
+    const services = [
+        { title: 'Frontend Development', desc: 'Building fast, responsive and modern web applications with cutting-edge technologies.', icon: 'fas fa-code', color: 'accent1' },
+        { title: 'Landing Page Development', desc: 'High-converting landing pages designed to captivate visitors and drive results.', icon: 'fas fa-rocket', color: 'accent2' },
+        { title: 'Portfolio Websites', desc: 'Stunning portfolio sites that showcase your work with elegance and impact.', icon: 'fas fa-briefcase', color: 'accent3' },
+        { title: 'Business Websites', desc: 'Professional websites that establish credibility and grow your online presence.', icon: 'fas fa-building', color: 'accent4' },
+        { title: 'React Applications', desc: 'Scalable single-page applications built with React and modern tooling.', icon: 'fab fa-react', color: 'accent5' },
+        { title: 'Responsive Design', desc: 'Pixel-perfect layouts that look exceptional on every device and screen size.', icon: 'fas fa-mobile-screen', color: 'accent1' },
+        { title: 'Website Redesign', desc: 'Transforming outdated websites into modern, high-performance digital experiences.', icon: 'fas fa-paint-roller', color: 'accent2' },
+        { title: 'UI Development', desc: 'Translating design mockups into pixel-perfect, interactive user interfaces.', icon: 'fas fa-layer-group', color: 'accent3' },
+        { title: 'Performance Optimization', desc: 'Speeding up websites for better user experience, SEO rankings and conversions.', icon: 'fas fa-gauge-high', color: 'accent4' },
+    ];
+
+    const testimonials = [
+        { text: 'Eze delivered an outstanding website that exceeded our expectations. His attention to detail and understanding of modern design principles made the entire process seamless.', name: 'Sarah Mitchell', role: 'CEO, TechVenture Inc.', initials: 'SM' },
+        { text: 'Working with Eze was a fantastic experience. He transformed our outdated website into a premium, modern platform that our clients love. Highly recommend his services.', name: 'David Chen', role: 'Founder, Prestige Properties', initials: 'DC' },
+        { text: 'The website Eze built for us is not only beautiful but incredibly fast and responsive. His technical skills are top-notch and he communicates clearly throughout the project.', name: 'Amanda Foster', role: 'Marketing Director, Atlas Co.', initials: 'AF' },
+        { text: 'Eze has a rare combination of design sensibility and technical expertise. The animations and interactions he implemented gave our site a truly premium feel.', name: 'James Okafor', role: 'Product Manager, Nexus Digital', initials: 'JO' },
+    ];
+
+    /* ============================================================
+       POPULATE DYNAMIC SECTIONS
+       ============================================================ */
+    function populateSkills() {
+        const feContainer = document.getElementById('frontend-skills');
+        frontendSkills.forEach(s => {
+            feContainer.innerHTML += `<div class="spotlight-card glass rounded-xl p-4 text-center animated-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent1/5">
+                <div class="spotlight-effect"></div>
+                <i class="${s.icon} text-2xl mb-2" style="color:${s.color}"></i>
+                <div class="text-sm font-medium text-tp/80">${s.name}</div>
+            </div>`;
+        });
+        const tlContainer = document.getElementById('tools-skills');
+        toolsSkills.forEach(s => {
+            tlContainer.innerHTML += `<div class="spotlight-card glass rounded-xl p-4 text-center animated-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent2/5">
+                <div class="spotlight-effect"></div>
+                <i class="${s.icon} text-2xl mb-2" style="color:${s.color}"></i>
+                <div class="text-sm font-medium text-tp/80">${s.name}</div>
+            </div>`;
+        });
+    }
+
+    function populateProjects() {
+        const grid = document.getElementById('projects-grid');
+        projects.forEach((p, i) => {
+            grid.innerHTML += `<a href="${p.url}" target="_blank" rel="noopener" class="tilt-card glass rounded-2xl overflow-hidden block no-underline group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-accent1/10" data-tilt>
+                <div class="card-glare rounded-2xl"></div>
+                <div class="relative h-48 overflow-hidden">
+                    <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent"></div>
+                    <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span class="glass-strong rounded-lg px-3 py-1.5 text-xs font-medium text-accent1 flex items-center gap-1.5"><i class="fas fa-external-link-alt text-[10px]"></i> Live</span>
+                    </div>
+                </div>
+                <div class="p-6 relative z-[3]">
+                    <h3 class="font-heading text-lg font-bold text-tp mb-2 group-hover:text-accent1 transition-colors">${p.title}</h3>
+                    <p class="text-ts text-sm leading-relaxed mb-4">${p.description}</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${p.tags.map(t => `<span class="tech-badge">${t}</span>`).join('')}
+                    </div>
+                </div>
+            </a>`;
+        });
+    }
+
+    function populateServices() {
+        const grid = document.getElementById('services-grid');
+        services.forEach(s => {
+            grid.innerHTML += `<div class="spotlight-card glass rounded-2xl p-6 animated-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <div class="spotlight-effect"></div>
+                <div class="w-12 h-12 rounded-xl bg-${s.color}/10 flex items-center justify-center mb-4 relative z-[2]">
+                    <i class="${s.icon} text-${s.color}"></i>
+                </div>
+                <h3 class="font-heading font-semibold text-tp mb-2 relative z-[2]">${s.title}</h3>
+                <p class="text-ts text-sm leading-relaxed relative z-[2]">${s.desc}</p>
+            </div>`;
+        });
+    }
+
+    /* ============================================================
+       TESTIMONIAL SLIDER
+       ============================================================ */
+    let currentTestimonial = 0;
+    let testimonialTimer;
+
+    function showTestimonial(index) {
+        const t = testimonials[index];
+        gsap.to('#testimonial-text', { opacity: 0, y: -10, duration: 0.3, onComplete: () => {
+            document.getElementById('testimonial-text').textContent = t.text;
+            gsap.to('#testimonial-text', { opacity: 1, y: 0, duration: 0.4 });
+        }});
+        document.getElementById('testimonial-avatar').textContent = t.initials;
+        document.getElementById('testimonial-name').textContent = t.name;
+        document.getElementById('testimonial-role').textContent = t.role;
+        document.querySelectorAll('#testimonial-dots span').forEach((d, i) => {
+            d.style.background = i === index ? 'var(--accent1)' : 'rgba(255,255,255,0.15)';
+        });
+    }
+
+    function nextTestimonial() { currentTestimonial = (currentTestimonial + 1) % testimonials.length; showTestimonial(currentTestimonial); resetTestimonialTimer(); }
+    function prevTestimonial() { currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length; showTestimonial(currentTestimonial); resetTestimonialTimer(); }
+    function resetTestimonialTimer() { clearInterval(testimonialTimer); testimonialTimer = setInterval(nextTestimonial, 6000); }
+
+    function initTestimonials() {
+        const dotsContainer = document.getElementById('testimonial-dots');
+        testimonials.forEach((_, i) => {
+            dotsContainer.innerHTML += `<span class="w-2 h-2 rounded-full transition-all duration-300" style="background:${i === 0 ? 'var(--accent1)' : 'rgba(255,255,255,0.15)'}"></span>`;
+        });
+        showTestimonial(0);
+        testimonialTimer = setInterval(nextTestimonial, 6000);
+    }
+
+    /* ============================================================
+       DOTFIELD BACKGROUND
+       ============================================================ */
+    function initDotField() {
+        const canvas = document.getElementById('dotfield-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, dots = [], mouse = { x: -9999, y: -9999 }, time = 0;
+        const spacing = window.innerWidth < 768 ? 36 : 28;
+        const bulgeStrength = 70, glowRadius = 180;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            dots = [];
+            const cols = Math.ceil(width / spacing) + 1;
+            const rows = Math.ceil(height / spacing) + 1;
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    dots.push({ bx: i * spacing, by: j * spacing, x: 0, y: 0, sparkle: Math.random() < 0.04 });
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            time += 0.008;
+
+            // Mouse glow
+            const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowRadius);
+            g.addColorStop(0, 'rgba(0,229,255,0.025)');
+            g.addColorStop(1, 'rgba(0,229,255,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, width, height);
+
+            for (let i = 0; i < dots.length; i++) {
+                const d = dots[i];
+                const wave = Math.sin(d.bx * 0.008 + time) * 2 + Math.cos(d.by * 0.008 + time * 0.7) * 2;
+                const dx = d.bx - mouse.x, dy = d.by - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                let ox = 0, oy = 0;
+                if (dist < glowRadius && dist > 0) {
+                    const f = (1 - dist / glowRadius) * bulgeStrength;
+                    ox = (dx / dist) * f;
+                    oy = (dy / dist) * f;
+                }
+                d.x = d.bx + ox;
+                d.y = d.by + oy + wave;
+
+                let alpha = 0.12;
+                let r = 1.5;
+                if (d.sparkle) {
+                    const sv = Math.sin(time * 4 + d.bx * 0.15) * 0.5 + 0.5;
+                    alpha = 0.12 + sv * 0.55;
+                    r = 1.5 + sv * 1.2;
+                }
+                if (dist < glowRadius) alpha += (1 - dist / glowRadius) * 0.25;
+
+                const hue = 185 + (d.bx / width) * 50;
+                ctx.fillStyle = `hsla(${hue},75%,68%,${alpha})`;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, Math.max(0.5, r), 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+        resize();
+        draw();
+    }
+
+    /* ============================================================
+       BALLPIT (HERO)
+       ============================================================ */
+    function initBallpit() {
+        const canvas = document.getElementById('ballpit-canvas');
+        const ctx = canvas.getContext('2d');
+        const hero = document.getElementById('hero');
+        let width, height, balls = [], visible = false;
+        const count = window.innerWidth < 768 ? 50 : 100;
+        const gravity = 0.045, friction = 0.995, wallBounce = 0.95;
+        let mouse = { x: -9999, y: -9999 };
+        const colors = [
+            { r:0, g:229, b:255 }, { r:79, g:140, b:255 },
+            { r:124, g:58, b:237 }, { r:56, g:189, b:248 }, { r:34, g:211, b:238 }
+        ];
+
+        function resize() {
+            width = canvas.width = hero.offsetWidth;
+            height = canvas.height = hero.offsetHeight;
+        }
+
+        function create() {
+            balls = [];
+            for (let i = 0; i < count; i++) {
+                const c = colors[Math.floor(Math.random() * colors.length)];
+                const r = Math.random() * 10 + 3;
+                balls.push({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, r, c, o: Math.random() * 0.25 + 0.1 });
+            }
+        }
+
+        function update() {
+            for (const b of balls) {
+                b.vy += gravity;
+                const dx = mouse.x - b.x, dy = mouse.y - b.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 200 && dist > 1) { b.vx += (dx / dist) * 0.25; b.vy += (dy / dist) * 0.25; }
+                b.vx *= friction; b.vy *= friction;
+                b.x += b.vx; b.y += b.vy;
+                if (b.x - b.r < 0) { b.x = b.r; b.vx *= -wallBounce; }
+                if (b.x + b.r > width) { b.x = width - b.r; b.vx *= -wallBounce; }
+                if (b.y - b.r < 0) { b.y = b.r; b.vy *= -wallBounce; }
+                if (b.y + b.r > height) { b.y = height - b.r; b.vy *= -wallBounce; }
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            for (const b of balls) {
+                const rad = Math.max(1, b.r);
+                const gr = ctx.createRadialGradient(b.x - rad * 0.3, b.y - rad * 0.3, rad * 0.05, b.x, b.y, rad);
+                const hi = Math.min(255, b.c.r + 90), hg = Math.min(255, b.c.g + 90), hb = Math.min(255, b.c.b + 90);
+                gr.addColorStop(0, `rgba(${hi},${hg},${hb},${Math.min(1, b.o * 1.6)})`);
+                gr.addColorStop(0.5, `rgba(${b.c.r},${b.c.g},${b.c.b},${b.o})`);
+                gr.addColorStop(1, `rgba(${Math.floor(b.c.r*0.4)},${Math.floor(b.c.g*0.4)},${Math.floor(b.c.b*0.4)},${b.o*0.4})`);
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, rad, 0, Math.PI * 2);
+                ctx.fillStyle = gr;
+                ctx.fill();
+            }
+        }
+
+        function loop() { if (visible) { update(); render(); } requestAnimationFrame(loop); }
+
+        const obs = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.05 });
+        obs.observe(hero);
+
+        hero.addEventListener('mousemove', e => { const r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+        hero.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+        window.addEventListener('resize', () => { resize(); });
+
+        resize(); create(); loop();
+    }
+
+    /* ============================================================
+       CUSTOM CURSOR
+       ============================================================ */
+    function initCursor() {
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.getElementById('cursor-dot').style.display = 'none';
+            document.getElementById('cursor-ring').style.display = 'none';
+            document.body.style.cursor = 'auto';
+            return;
+        }
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, dx = 0, dy = 0, rx = 0, ry = 0;
+
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+        function animate() {
+            dx += (mx - dx) * 0.2; dy += (my - dy) * 0.2;
+            rx += (mx - rx) * 0.08; ry += (my - ry) * 0.08;
+            dot.style.left = dx + 'px'; dot.style.top = dy + 'px';
+            ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Hover states
+        document.querySelectorAll('a, button, .form-input, [data-cursor="expand"]').forEach(el => {
+            el.addEventListener('mouseenter', () => { dot.classList.add('expanded'); ring.classList.add('expanded'); });
+            el.addEventListener('mouseleave', () => { dot.classList.remove('expanded'); ring.classList.remove('expanded'); });
+        });
+        document.querySelectorAll('.tilt-card, .spotlight-card, .glass').forEach(el => {
+            el.addEventListener('mouseenter', () => { dot.classList.add('card-hover'); ring.classList.add('card-hover'); });
+            el.addEventListener('mouseleave', () => { dot.classList.remove('card-hover'); ring.classList.remove('card-hover'); });
+        });
+    }
+
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
+    function initNavigation() {
+        const navbar = document.getElementById('navbar');
+        const links = document.querySelectorAll('.nav-link[data-section]');
+        const sections = [];
+        links.forEach(l => { const s = document.getElementById(l.dataset.section); if (s) sections.push({ el: s, link: l }); });
+
+        // Scroll blur
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        }, { passive: true });
+
+        // Active section detection
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const match = sections.find(s => s.el === entry.target);
+                    if (match) match.link.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        sections.forEach(s => obs.observe(s.el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) {
+                    const y = target.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const overlay = document.getElementById('mobile-overlay');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        });
+        overlay.addEventListener('click', closeMobileMenu);
+        document.querySelectorAll('.mobile-nav-link').forEach(l => l.addEventListener('click', closeMobileMenu));
+    }
+
+    function closeMobileMenu() {
+        document.getElementById('hamburger-btn').classList.remove('open');
+        document.getElementById('mobile-menu').classList.remove('open');
+        document.getElementById('mobile-overlay').classList.add('hidden');
+    }
+
+    /* ============================================================
+       HERO ANIMATIONS
+       ============================================================ */
+    function initHeroAnimations() {
+        // Split headline into letters
+        const headline = document.querySelector('.hero-headline');
+        const text = 'Crafting Premium Digital Experiences';
+        headline.innerHTML = text.split('').map(c => `<span class="inline-block" style="opacity:0;transform:translateY(25px);filter:blur(8px)">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.7, delay: 0.3 })
+          .to('.hero-greeting', { opacity: 1, y: 0, duration: 0.7 }, '-=0.4')
+          .to('.hero-name', { opacity: 1, scale: 1, duration: 0.7 }, '-=0.4')
+          .to(headline.querySelectorAll('span'), { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.025 }, '-=0.3')
+          .to('.hero-description', { opacity: 1, y: 0, duration: 0.7 }, '-=0.2')
+          .to('.hero-buttons', { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
+          .to('.hero-buttons > *', { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, '-=0.3')
+          .to('.code-snippet', { opacity: 0.35, duration: 1 }, '-=0.5')
+          .to('.hero-scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.5');
+
+        // Hero mouse glow
+        const hero = document.getElementById('hero');
+        const glow = document.getElementById('hero-glow');
+        hero.addEventListener('mousemove', e => {
+            const r = hero.getBoundingClientRect();
+            glow.style.left = (e.clientX - r.left) + 'px';
+            glow.style.top = (e.clientY - r.top) + 'px';
+        });
+    }
+
+    /* ============================================================
+       GSAP SCROLL ANIMATIONS
+       ============================================================ */
+    function initScrollAnimations() {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Generic reveal
+        gsap.utils.toArray('.gsap-reveal').forEach((el, i) => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+                opacity: 0, y: 50, duration: 0.8, delay: i % 3 * 0.1, ease: 'power3.out'
+            });
+        });
+
+        // Counter animation trigger
+        const counters = document.querySelectorAll('.counter-number');
+        const counterObs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObs.observe(c));
+    }
+
+    function animateCounter(el) {
+        const target = parseInt(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        const duration = 2000;
+        const start = performance.now();
+
+        function update(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+            const current = Math.floor(eased * target);
+            el.textContent = current + suffix;
+            if (progress < 1) requestAnimationFrame(update);
+            else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(update);
+    }
+
+    /* ============================================================
+       TILT CARDS
+       ============================================================ */
+    function initTiltCards() {
+        document.querySelectorAll('[data-tilt]').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const cx = rect.width / 2, cy = rect.height / 2;
+                const rotateX = ((y - cy) / cy) * -6;
+                const rotateY = ((x - cx) / cx) * 6;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                card.style.setProperty('--glare-x', (x / rect.width * 100) + '%');
+                card.style.setProperty('--glare-y', (y / rect.height * 100) + '%');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+    }
+
+    /* ============================================================
+       SPOTLIGHT CARDS
+       ============================================================ */
+    function initSpotlightCards() {
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            const effect = card.querySelector('.spotlight-effect');
+            if (!effect) return;
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                effect.style.left = (e.clientX - r.left) + 'px';
+                effect.style.top = (e.clientY - r.top) + 'px';
+            });
+        });
+    }
+
+    /* ============================================================
+       MAGNETIC BUTTONS
+       ============================================================ */
+    function initMagneticButtons() {
+        if ('ontouchstart' in window) return;
+        document.querySelectorAll('[data-magnetic]').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const r = btn.getBoundingClientRect();
+                const x = e.clientX - r.left - r.width / 2;
+                const y = e.clientY - r.top - r.height / 2;
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+                btn.style.transition = 'transform 0.4s ease';
+                setTimeout(() => { btn.style.transition = ''; }, 400);
+            });
+        });
+    }
+
+    /* ============================================================
+       BUTTON RIPPLE
+       ============================================================ */
+    function initRipples() {
+        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    }
+
+    /* ============================================================
+       CONTACT FORM
+       ============================================================ */
+    function initContactForm() {
+        document.getElementById('contact-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = orig;
+                btn.disabled = false;
+                e.target.reset();
+                showToast('Message sent successfully! I\'ll get back to you soon.');
+            }, 1500);
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.querySelector('.toast-message').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    /* ============================================================
+       SCROLL PROGRESS
+       ============================================================ */
+    function initScrollProgress() {
+        const bar = document.getElementById('scroll-progress');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement.scrollHeight - window.innerHeight;
+            const p = h > 0 ? window.scrollY / h : 0;
+            bar.style.transform = `scaleX(${p})`;
+        }, { passive: true });
+    }
+
+    /* ============================================================
+       BACK TO TOP
+       ============================================================ */
+    function initBackToTop() {
+        const btn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            btn.classList.toggle('visible', window.scrollY > 600);
+        }, { passive: true });
+    }
+
+    /* ============================================================
+       RESUME DOWNLOAD
+       ============================================================ */
+    function downloadResume() {
+        const content = `EZE EBUKA\nFreelance Frontend Web Developer\nEmail: eze114238@gmail.com\n\nEXPERIENCE\n────────────────────────────────────────\nFreelance Frontend Web Developer | 2+ Years\n• Developed premium responsive websites\n• Built business websites and landing pages\n• Designed interactive user interfaces\n• Optimized website performance for speed and SEO\n• Worked with multiple freelance clients\n• Delivered numerous successful frontend projects\n\nSKILLS\n────────────────────────────────────────\nFrontend: HTML5, CSS3, JavaScript, TypeScript, React, Next.js, Tailwind CSS, Framer Motion, GSAP\nTools: Git, GitHub, Vite, Figma, Responsive Design, Performance Optimization\n\nSERVICES\n────────────────────────────────────────\n• Frontend Development\n• Landing Page Development\n• Portfolio Websites\n• Business Websites\n• React Applications\n• Responsive Website Design\n• Website Redesign\n• UI Development\n• Performance Optimization\n\nPROJECTS\n────────────────────────────────────────\n• Chronos Store — Modern luxury eCommerce website\n• Prestige Real Estate — Luxury real estate website\n• Atlas Plumbing & Heating Co. — Professional plumbing company website`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Eze_Ebuka_Resume.txt';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Resume downloaded successfully!');
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+        populateSkills();
+        populateProjects();
+        populateServices();
+        initTestimonials();
+        initDotField();
+        initBallpit();
+        initCursor();
+        initNavigation();
+        initHeroAnimations();
+        initScrollAnimations();
+        initTiltCards();
+        initSpotlightCards();
+        initMagneticButtons();
+        initRipples();
+        initContactForm();
+        initScrollProgress();
+        initBackToTop();
+    });
+    </script>
+</body>
+</html>
